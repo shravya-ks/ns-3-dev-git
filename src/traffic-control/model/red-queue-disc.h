@@ -108,6 +108,7 @@ public:
     uint32_t unforcedDrop;  //!< Early probability drops
     uint32_t forcedDrop;    //!< Forced drops, qavg > max threshold
     uint32_t qLimDrop;      //!< Drops due to queue limits
+    uint32_t unforcedMark;  //!< Early probability marks
   } Stats;
 
   /** 

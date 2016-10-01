@@ -92,7 +92,10 @@ instance, for IPv4 and IPv6 packets it is needed to separately store the header
 and the payload, so that header fields can be manipulated, e.g., to support ECN.
 To this end, Ipv4QueueDiscItem and Ipv6QueueDiscItem are derived from QueueDiscItem
 to additionally store the packet header and provide protocol specific operations
-such as ECN marking.
+such as ECN marking. ECN marking is a feature that can be applied to a QueueDiscItem.
+Hence, Mark () method for ECN marking has been declared as virtual in QueueDiscItem. 
+Classes in the internet model, that inherit the QueueDiscItem, can implement Mark ()
+method based on the requirement.
 
 Classes are implemented via the QueueDiscClass class, which just consists of a pointer
 to the attached queue disc. Such a pointer is accessible through the QueueDisc attribute.

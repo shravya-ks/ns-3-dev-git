@@ -34,7 +34,21 @@ weight, MinTh and MaxTh and (ii) adapts maximum drop probability. The model
 in ns-3 contains implementation of both the features, and is a port of Sally
 Floyd's ns-2 ARED model. Note that the user is allowed to choose and explicitly
 configure the simulation by selecting feature (i) or feature (ii), or both.
- 
+
+Explicit Congestion Notification (ECN)
+======================================
+RED model supports ECN mode of operation to notify endpoints of congestion that
+may be developing in a bottleneck queue, without resorting to packet drops. As
+recommended in RFC 3168, ECN marking is used only when an incoming packet has an
+ECT bit set in its IP header, and if the average queue length is between minimum
+and maximum threshold. Packets are always dropped when the average queue length
+is above the maximum threshold, or if ECT bit is not set in the IP header.
+
+In order to test the functionality of ECN support in RED, a test suite named
+ecn-red-queue-disc-test-suite.cc has been developed. It  depends on the internet
+model and hence, is placed in src/test/ns3tc. Furthermore, a test suite named 
+ecn-ipv6-red-queue-disc-test-suite.cc is also provided in src/test/ns3tc to verify 
+the working of ECN in RED QueueDisc with IPv6. 
 
 References
 ==========
@@ -44,6 +58,9 @@ S.Floyd, K.Fall http://icir.org/floyd/papers/redsims.ps
 
 ARED queue implementation is based on the algorithm provided in:
 S. Floyd et al, http://www.icir.org/floyd/papers/adaptiveRed.pdf
+
+The addition of explicit congestion notification (ECN) to IP: 
+K. K. Ramakrishnan et al, https://tools.ietf.org/html/rfc3168 
 
 Attributes
 ==========

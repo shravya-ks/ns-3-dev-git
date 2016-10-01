@@ -224,6 +224,19 @@ since |ns3| nodes will usually be well-behaving, therea should't be any Duplicat
 This might be changed in the future, so as to avoid issues with real-world 
 integrated simulations.
 
+Explicit Congestion Notification (ECN) bits in IPv6
+===================================================
+
+- In IPv6, ECN bits are the last 2 bits of the Traffic class and occupy 10th and 11th bit 
+  in the header.
+
+- IPv6 header has the EcnType enum with all 4 ECN codepoints defined as mentioned
+  in RFC 3168, and also the setter and getter method to set ECN values and retrieve it.
+
+- Mark () method is implemented in Ipv6QueueDiscItem. It is a boolean method and
+  returns true if marking the packet happens successfully, i.e., it successfully
+  sets the CE bit in IPv6 header.
+
 Host and Router behaviour in IPv6 and |ns3|
 ===========================================
 
