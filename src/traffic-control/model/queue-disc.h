@@ -91,6 +91,12 @@ public:
    */
   virtual void Print (std::ostream &os) const;
 
+  /**
+   * \brief Marks the packet by setting ECN_CE bits
+   * \return true if the packet gets marked, false otherwise
+   */
+  virtual bool Mark (void) = 0 ;
+
 private:
   /**
    * \brief Default constructor
