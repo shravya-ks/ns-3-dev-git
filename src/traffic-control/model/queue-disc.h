@@ -92,10 +92,11 @@ public:
   virtual void Print (std::ostream &os) const;
 
   /**
-   * \brief Marks the packet by setting ECN_CE bits
+   * \brief Marks the packet as a substitute for dropping it, such as for Explicit Congestion Notification
+   *
    * \return true if the packet gets marked, false otherwise
    */
-  virtual bool Mark (void) = 0 ;
+  virtual bool Mark (void) = 0;
 
 private:
   /**

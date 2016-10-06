@@ -383,10 +383,12 @@ RedQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
           NS_LOG_LOGIC ("DropEarly returns 1");
           if (item->Mark ())
             {
+              NS_LOG_LOGIC ("Setting UNFORCED MARK");
               m_stats.unforcedMark++;
             }
           else
             {
+              NS_LOG_LOGIC ("Unable to mark, setting UNFORCED DROP");
               dropType = DTYPE_UNFORCED;
             }
         }
