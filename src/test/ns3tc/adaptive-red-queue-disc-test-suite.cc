@@ -36,7 +36,7 @@ public:
   virtual void DoRun (void);
 private:
   void Enqueue (Ptr<RedQueueDisc> queue, uint32_t size, uint32_t nPkt);
-  void RunAutoRedDiscTest (StringValue mode);
+  void RunAutoRedQueueDiscTest (StringValue mode);
 };
 
 AutoRedQueueDiscTestCase::AutoRedQueueDiscTestCase ()
@@ -45,7 +45,7 @@ AutoRedQueueDiscTestCase::AutoRedQueueDiscTestCase ()
 }
 
 void
-AutoRedQueueDiscTestCase::RunAutoRedDiscTest (StringValue mode)
+AutoRedQueueDiscTestCase::RunAutoRedQueueDiscTest (StringValue mode)
 {
   uint32_t pktSize = 0;
   uint32_t modeSize = 1;                // 1 for packets; pktSize for bytes
@@ -248,13 +248,10 @@ AutoRedQueueDiscTestCase::Enqueue (Ptr<RedQueueDisc> queue, uint32_t size, uint3
 void
 AutoRedQueueDiscTestCase::DoRun (void)
 {
-  RunAutoRedDiscTest (StringValue ("QUEUE_MODE_PACKETS"));
-  RunAutoRedDiscTest (StringValue ("QUEUE_MODE_BYTES"));
+  RunAutoRedQueueDiscTest (StringValue ("QUEUE_MODE_PACKETS"));
+  RunAutoRedQueueDiscTest (StringValue ("QUEUE_MODE_BYTES"));
   Simulator::Destroy ();
 }
-
-
-
 
 // Tests to verify the working of *adaptive* parameter in ARED
 class AdaptiveRedQueueDiscTestCase : public TestCase
@@ -263,7 +260,7 @@ public:
   AdaptiveRedQueueDiscTestCase ();
   virtual void DoRun (void);
 private:
-  void RunAdaptiveRedDiscTest (StringValue mode, BooleanValue useEcn);
+  void RunAdaptiveRedQueueDiscTest (StringValue mode, BooleanValue useEcn);
 };
 
 AdaptiveRedQueueDiscTestCase::AdaptiveRedQueueDiscTestCase ()
@@ -272,7 +269,7 @@ AdaptiveRedQueueDiscTestCase::AdaptiveRedQueueDiscTestCase ()
 }
 
 void
-AdaptiveRedQueueDiscTestCase::RunAdaptiveRedDiscTest (StringValue mode, BooleanValue useEcn)
+AdaptiveRedQueueDiscTestCase::RunAdaptiveRedQueueDiscTest (StringValue mode, BooleanValue useEcn)
 {
   uint32_t    pktSize = 1000;
   uint32_t    modeSize = 1;             // 1 for packets; pktSize for bytes
@@ -463,10 +460,10 @@ AdaptiveRedQueueDiscTestCase::RunAdaptiveRedDiscTest (StringValue mode, BooleanV
 void
 AdaptiveRedQueueDiscTestCase::DoRun (void)
 {
-  RunAdaptiveRedDiscTest (StringValue ("QUEUE_MODE_PACKETS"), false);
-  RunAdaptiveRedDiscTest (StringValue ("QUEUE_MODE_BYTES"), false);
-  RunAdaptiveRedDiscTest (StringValue ("QUEUE_MODE_PACKETS"), true);
-  RunAdaptiveRedDiscTest (StringValue ("QUEUE_MODE_BYTES"), true);
+  RunAdaptiveRedQueueDiscTest (StringValue ("QUEUE_MODE_PACKETS"), false);
+  RunAdaptiveRedQueueDiscTest (StringValue ("QUEUE_MODE_BYTES"), false);
+  RunAdaptiveRedQueueDiscTest (StringValue ("QUEUE_MODE_PACKETS"), true);
+  RunAdaptiveRedQueueDiscTest (StringValue ("QUEUE_MODE_BYTES"), true);
   
   Simulator::Destroy ();
 }

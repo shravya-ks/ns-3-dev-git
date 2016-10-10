@@ -209,7 +209,7 @@ main (int argc, char *argv[])
   cmd.AddValue ("writeFlowMonitor", "<0/1> to enable Flow Monitor and write their results", flowMonitor);
 
   cmd.Parse (argc, argv);
-  if ( (aredTest != 1) && (aredTest != 2) && (aredTest != 3) && (aredTest != 4) && (aredTest != 6) && (aredTest != 7) && (aredTest != 8) && (aredTest != 9) && (aredTest != 10) && (aredTest != 11) && (aredTest != 12) && (aredTest != 13) && (aredTest != 14) && (aredTest != 15) )
+  if ((aredTest < 1) || (aredTest == 5) || (aredTest > 15))
     {
       std::cout << "Invalid test number. Supported tests are 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14 or 15" << std::endl;
       exit (1);

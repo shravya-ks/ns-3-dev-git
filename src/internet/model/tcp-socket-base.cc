@@ -2592,7 +2592,7 @@ TcpSocketBase::CompleteFork (Ptr<Packet> p, const TcpHeader& h,
   /* Check if we received an ECN SYN packet. Change the ECN state of receiver to ECN_IDLE if sender has sent an ECN SYN 
    * packet and the traffic is ECN Capable
    */
-  if(m_ecn && (h.GetFlags () & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::CWR | TcpHeader::ECE)  )
+  if (m_ecn && (h.GetFlags () & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::CWR | TcpHeader::ECE))
     {
       SendEmptyPacket (TcpHeader::SYN | TcpHeader::ACK | TcpHeader::ECE);
       m_ecnState = ECN_IDLE;
