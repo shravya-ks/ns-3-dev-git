@@ -193,6 +193,12 @@ TypeId RedQueueDisc::GetTypeId (void)
                    TimeValue (MilliSeconds (20)),
                    MakeTimeAccessor (&RedQueueDisc::m_linkDelay),
                    MakeTimeChecker ())
+    .AddAttribute ("UseEcn", 
+                   "Checks if queue-disc is ECN Capable",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&RedQueueDisc::m_useEcn),
+                   MakeBooleanChecker ())
+                  
   ;
 
   return tid;
@@ -349,21 +355,12 @@ RedQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   m_countBytes += item->GetPacketSize ();
 
   uint32_t dropType = DTYPE_NONE;
-
-  if ((GetMode () == Queue::QUEUE_MODE_PACKETS && nQueued >= m_queueLimit) ||
-      (GetMode () == Queue::QUEUE_MODE_BYTES && nQueued + item->GetPacketSize() > m_queueLimit))
-    {
-      NS_LOG_DEBUG ("\t Dropping due to Queue Full " << nQueued);
-      dropType = DTYPE_FORCED;
-      m_stats.qLimDrop++;
-    }
-
-  else if (m_qAvg >= m_minTh && nQueued > 1)
+  if (m_qAvg >= m_minTh && nQueued > 1)
     {
       if ((!m_isGentle && m_qAvg >= m_maxTh) ||
           (m_isGentle && m_qAvg >= 2 * m_maxTh))
         {
-          NS_LOG_DEBUG ("adding FORCED DROP ");
+          NS_LOG_DEBUG ("adding DROP FORCED MARK");
           dropType = DTYPE_FORCED;
         }
       else if (m_old == 0)
@@ -381,16 +378,7 @@ RedQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
       else if (DropEarly (item, nQueued))
         {
           NS_LOG_LOGIC ("DropEarly returns 1");
-          if (item->Mark ())
-            {
-              NS_LOG_LOGIC ("Setting UNFORCED MARK");
-              m_stats.unforcedMark++;
-            }
-          else
-            {
-              NS_LOG_LOGIC ("Unable to mark, setting UNFORCED DROP");
-              dropType = DTYPE_UNFORCED;
-            }
+          dropType = DTYPE_UNFORCED;
         }
     }
   else 
@@ -400,12 +388,36 @@ RedQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
       m_old = 0;
     }
 
+  if ((GetMode () == Queue::QUEUE_MODE_PACKETS && nQueued >= m_queueLimit) ||
+      (GetMode () == Queue::QUEUE_MODE_BYTES && nQueued + item->GetPacketSize() > m_queueLimit))
+    {
+      NS_LOG_DEBUG ("\t Dropping due to Queue Full " << nQueued);
+      dropType = DTYPE_FORCED;
+      m_stats.qLimDrop++;
+    }
+
+  if ((GetMode () == Queue::QUEUE_MODE_PACKETS && nQueued >= m_queueLimit) ||
+      (GetMode () == Queue::QUEUE_MODE_BYTES && nQueued + item->GetPacketSize() > m_queueLimit))
+    {
+      NS_LOG_DEBUG ("\t Dropping due to Queue Full " << nQueued);
+      dropType = DTYPE_FORCED;
+      m_stats.qLimDrop++;
+    }
+
   if (dropType == DTYPE_UNFORCED)
     {
-      NS_LOG_DEBUG ("\t Dropping due to Prob Mark " << m_qAvg);
-      m_stats.unforcedDrop++;
-      Drop (item);
-      return false;
+      if (m_useEcn && item->Mark ())
+        {
+          NS_LOG_DEBUG ("\t Marking due to Prob Mark " << m_qAvg);
+          m_stats.unforcedMark++;
+        }
+      else
+        {
+          NS_LOG_DEBUG ("\t Dropping due to Prob Mark " << m_qAvg);
+          m_stats.unforcedDrop++;
+          Drop (item);
+          return false;
+        }
     }
   else if (dropType == DTYPE_FORCED)
     {
@@ -417,10 +429,15 @@ RedQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
           m_count = 0;
           m_countBytes = 0;
         }
-      return false;
+        return false;
     }
 
   bool retval = GetInternalQueue (0)->Enqueue (item);
+
+  if (!retval)
+    {
+      m_stats.qLimDrop++;
+    }
 
   // If Queue::Enqueue fails, QueueDisc::Drop is called by the internal queue
   // because QueueDisc::AddInternalQueue sets the drop callback
@@ -428,7 +445,8 @@ RedQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   NS_LOG_LOGIC ("Number packets " << GetInternalQueue (0)->GetNPackets ());
   NS_LOG_LOGIC ("Number bytes " << GetInternalQueue (0)->GetNBytes ());
 
-  return retval;
+  return retval; 
+ 
 }
 
 /*
@@ -481,7 +499,6 @@ RedQueueDisc::InitializeParams (void)
   m_stats.forcedDrop = 0;
   m_stats.unforcedDrop = 0;
   m_stats.qLimDrop = 0;
-  m_stats.unforcedMark = 0;
 
   m_qAvg = 0.0;
   m_count = 0;

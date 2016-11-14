@@ -93,6 +93,8 @@ EcnRedQueueDiscTestCase::RunRedTest (StringValue mode)
                          "Verify that we can actually set the attribute QueueLimit");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QW", DoubleValue (0.002)), true,
                          "Verify that we can actually set the attribute QW");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("UseEcn", BooleanValue (true)), true,
+                         "Verify that we can actually set the attribute UseEcn");
 
   Address dest;
 
@@ -168,6 +170,8 @@ EcnRedQueueDiscTestCase::RunRedTest (StringValue mode)
                          "Verify that we can actually set the attribute QueueLimit");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QW", DoubleValue (0.002)), true,
                          "Verify that we can actually set the attribute QW");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("UseEcn", BooleanValue (false)), true,
+                         "Verify that we can actually set the attribute UseEcn");
 
   if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
     {
@@ -244,6 +248,8 @@ EcnRedQueueDiscTestCase::RunRedTest (StringValue mode)
                          "Verify that we can actually set the attribute MaxTh");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueLimit", UintegerValue (qSize)), true,
                          "Verify that we can actually set the attribute QueueLimit");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("UseEcn", BooleanValue (true)), true,
+                         "Verify that we can actually set the attribute UseEcn");
 
   if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
     {
@@ -272,6 +278,8 @@ EcnRedQueueDiscTestCase::RunRedTest (StringValue mode)
                          "Verify that we can actually set the attribute QueueLimit");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QW", DoubleValue (0.020)), true,
                          "Verify that we can actually set the attribute QW");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("UseEcn", BooleanValue (true)), true,
+                         "Verify that we can actually set the attribute UseEcn");
 
   if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
     {
@@ -308,6 +316,8 @@ EcnRedQueueDiscTestCase::RunRedTest (StringValue mode)
                          "Verify that we can actually set the attribute QueueLimit");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QW", DoubleValue (0.020)), true,
                          "Verify that we can actually set the attribute QW");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("UseEcn", BooleanValue (false)), true,
+                         "Verify that we can actually set the attribute UseEcn");
 
   if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
     {
@@ -345,6 +355,10 @@ EcnRedQueueDiscTestCase::RunRedTest (StringValue mode)
                          "Verify that we can actually set the attribute QueueLimit");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QW", DoubleValue (0.020)), true,
                          "Verify that we can actually set the attribute QW");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("UseEcn", BooleanValue (true)), true,
+                         "Verify that we can actually set the attribute UseEcn");
+
+ 
 
   if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
     {
@@ -359,13 +373,13 @@ EcnRedQueueDiscTestCase::RunRedTest (StringValue mode)
   if (queue->GetMode () == Queue::QUEUE_MODE_PACKETS)
     {
       NS_TEST_EXPECT_MSG_EQ (st.unforcedDrop, 0, "There should be no unforced dropped packets with this seed, run number, and stream");
-      NS_TEST_EXPECT_MSG_EQ (st.unforcedMark, 35, "There should be 35 unforced marked packets  due to probability mark with this seed, run number, and stream");
+      NS_TEST_EXPECT_MSG_EQ (st.unforcedMark, 62, "There should be 62 unforced marked packets  due to probability mark with this seed, run number, and stream");
       NS_TEST_EXPECT_MSG_EQ (st.forcedDrop, 51, "There should be 51 forced drops with this seed, run number, and stream");
     }
   else
     {
       NS_TEST_EXPECT_MSG_EQ (st.unforcedDrop, 0, "There should be no unforced dropped packets with this seed, run number, and stream");
-      NS_TEST_EXPECT_MSG_EQ (st.unforcedMark, 36, "There should be 36 unforced marked packets  due to probability mark with this seed, run   number, and stream");
+      NS_TEST_EXPECT_MSG_EQ (st.unforcedMark, 62, "There should be 62 unforced marked packets  due to probability mark with this seed, run   number, and stream");
       NS_TEST_EXPECT_MSG_EQ (st.forcedDrop, 51, "There should be 51 forced drops due to queue limit with this seed, run number, and stream");
     }
 }

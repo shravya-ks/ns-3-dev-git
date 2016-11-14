@@ -233,7 +233,7 @@ Explicit Congestion Notification (ECN) bits in IPv6
 - The IPv6 header class defines an EcnType enum with all four ECN codepoints
   (ECN_NotECT, ECN_ECT1, ECN_ECT0, ECN_CE) mentioned
   in RFC 3168, and also a setter and getter method to handle ECN values in
-  the TOS field.
+  the Traffic Class field.
 
 Ipv6QueueDiscItem
 *****************
