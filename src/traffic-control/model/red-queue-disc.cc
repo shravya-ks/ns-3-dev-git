@@ -193,12 +193,12 @@ TypeId RedQueueDisc::GetTypeId (void)
                    TimeValue (MilliSeconds (20)),
                    MakeTimeAccessor (&RedQueueDisc::m_linkDelay),
                    MakeTimeChecker ())
-    .AddAttribute ("UseEcn", 
+    .AddAttribute ("UseEcn",
                    "Checks if queue-disc is ECN Capable",
                    BooleanValue (false),
                    MakeBooleanAccessor (&RedQueueDisc::m_useEcn),
                    MakeBooleanChecker ())
-                  
+
   ;
 
   return tid;
@@ -396,14 +396,6 @@ RedQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
       m_stats.qLimDrop++;
     }
 
-  if ((GetMode () == Queue::QUEUE_MODE_PACKETS && nQueued >= m_queueLimit) ||
-      (GetMode () == Queue::QUEUE_MODE_BYTES && nQueued + item->GetPacketSize() > m_queueLimit))
-    {
-      NS_LOG_DEBUG ("\t Dropping due to Queue Full " << nQueued);
-      dropType = DTYPE_FORCED;
-      m_stats.qLimDrop++;
-    }
-
   if (dropType == DTYPE_UNFORCED)
     {
       if (m_useEcn && item->Mark ())
@@ -429,7 +421,7 @@ RedQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
           m_count = 0;
           m_countBytes = 0;
         }
-        return false;
+      return false;
     }
 
   bool retval = GetInternalQueue (0)->Enqueue (item);
@@ -446,7 +438,6 @@ RedQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   NS_LOG_LOGIC ("Number bytes " << GetInternalQueue (0)->GetNBytes ());
 
   return retval; 
- 
 }
 
 /*
@@ -499,6 +490,7 @@ RedQueueDisc::InitializeParams (void)
   m_stats.forcedDrop = 0;
   m_stats.unforcedDrop = 0;
   m_stats.qLimDrop = 0;
+  m_stats.unforcedMark = 0;
 
   m_qAvg = 0.0;
   m_count = 0;
