@@ -198,7 +198,6 @@ TypeId RedQueueDisc::GetTypeId (void)
                    BooleanValue (false),
                    MakeBooleanAccessor (&RedQueueDisc::m_useEcn),
                    MakeBooleanChecker ())
-
   ;
 
   return tid;
