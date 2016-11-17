@@ -151,14 +151,14 @@ public:
      ECN_ECT1 = 0x01,
      ECN_ECT0 = 0x02,
      ECN_CE = 0x03
-   }; 
+   };
 
   /**
    * \brief Set ECN Field
    * \param ecn ECN Type
    */
   void SetEcn (EcnType ecn);
- 
+
   /**
    * \return the ECN field of this packet.
    */

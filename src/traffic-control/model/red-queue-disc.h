@@ -111,7 +111,7 @@ public:
     uint32_t unforcedMark;  //!< Early probability marks
   } Stats;
 
-  /** 
+  /**
    * \brief Drop types
    */
   enum
