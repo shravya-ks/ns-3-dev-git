@@ -339,7 +339,8 @@ TcpSocketBase::TcpSocketBase (void)
     m_retransOut (0),
     m_congestionControl (0),
     m_isFirstPartialAck (true),
-    m_ecnState (NO_ECN),
+    m_ecn(false),
+    m_ecnState (ECN_DISABLED),
     m_ecnEchoSeq (0),
     m_ecnCESeq (0),
     m_ecnCWRSeq (0)
@@ -1073,7 +1074,7 @@ TcpSocketBase::DoConnect (void)
         }
       NS_LOG_DEBUG (TcpStateName[m_state] << " -> SYN_SENT");
       m_state = SYN_SENT;
-      m_ecnState = NO_ECN;    // because sender is not yet aware about receiver's ECN capability 
+      m_ecnState = ECN_DISABLED;    // because sender is not yet aware about receiver's ECN capability 
     }
   else if (m_state != TIME_WAIT)
     { // In states SYN_RCVD, ESTABLISHED, FIN_WAIT_1, FIN_WAIT_2, and CLOSING, an connection
@@ -1398,7 +1399,7 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, const Address &fromAddress,
           TcpHeader h;
           Ptr<Packet> p = Create<Packet> ();
           // Send a packet tag for setting ECT bits in IP header
-          if (m_ecnState != NO_ECN )
+          if (m_ecnState != ECN_DISABLED )
             {
               SocketIpTosTag ipTosTag;
               ipTosTag.SetTos (0x02);
@@ -1660,7 +1661,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
                     " Segments acked: " << segsAcked <<
                     " bytes left: " << m_bytesAckedNotProcessed);
 
-      if ((m_ecnState != NO_ECN) && (tcpHeader.GetFlags () & TcpHeader::ECE))
+      if ((m_ecnState != ECN_DISABLED) && (tcpHeader.GetFlags () & TcpHeader::ECE))
         {
           if (m_ecnEchoSeq < tcpHeader.GetAckNumber ())
             {
@@ -1906,7 +1907,7 @@ TcpSocketBase::ProcessSynSent (Ptr<Packet> packet, const TcpHeader& tcpHeader)
         }
       else
         {
-          m_ecnState = NO_ECN;
+          m_ecnState = ECN_DISABLED;
           SendEmptyPacket (TcpHeader::SYN | TcpHeader::ACK);    
         }
     }
@@ -1934,7 +1935,7 @@ TcpSocketBase::ProcessSynSent (Ptr<Packet> packet, const TcpHeader& tcpHeader)
         }
       else
         {
-          m_ecnState = NO_ECN;
+          m_ecnState = ECN_DISABLED;
         }
 
       SendPendingData (m_connected);
@@ -2015,7 +2016,7 @@ TcpSocketBase::ProcessSynRcvd (Ptr<Packet> packet, const TcpHeader& tcpHeader,
         }
       else
         {
-          m_ecnState = NO_ECN;
+          m_ecnState = ECN_DISABLED;
           SendEmptyPacket (TcpHeader::SYN | TcpHeader::ACK);
         }
     }
@@ -2601,7 +2602,7 @@ TcpSocketBase::CompleteFork (Ptr<Packet> p, const TcpHeader& h,
   else
     {
       SendEmptyPacket (TcpHeader::SYN | TcpHeader::ACK);
-      m_ecnState = NO_ECN;
+      m_ecnState = ECN_DISABLED;
     }  
 }
 
@@ -2671,8 +2672,8 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
   if (GetIpTos ())
     {
       SocketIpTosTag ipTosTag;
-      NS_LOG_LOGIC (" ECT bits should not be set on retranmsitted packets ");
-      if (m_ecnState != NO_ECN && (GetIpTos () & 0x3) == 0 && !isRetransmission)
+      NS_LOG_LOGIC (" ECT bits should not be set on retransmitted packets ");
+      if (m_ecnState != ECN_DISABLED && (GetIpTos () & 0x3) == 0 && !isRetransmission)
         { 
           ipTosTag.SetTos (GetIpTos () | 0x2);
         }
@@ -2684,7 +2685,7 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
     }
   else
     {
-      if (m_ecnState != NO_ECN && !isRetransmission)
+      if (m_ecnState != ECN_DISABLED && !isRetransmission)
         {
           SocketIpTosTag ipTosTag;
           ipTosTag.SetTos (0x02);
@@ -2695,7 +2696,7 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
   if (IsManualIpv6Tclass ())
     {
       SocketIpv6TclassTag ipTclassTag;
-      if (m_ecnState != NO_ECN && (GetIpv6Tclass () & 0x3) == 0 && !isRetransmission)
+      if (m_ecnState != ECN_DISABLED && (GetIpv6Tclass () & 0x3) == 0 && !isRetransmission)
         {
           ipTclassTag.SetTclass (GetIpv6Tclass () | 0x2);
         }
@@ -2707,7 +2708,7 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
     }
   else
     {
-      if (m_ecnState != NO_ECN && !isRetransmission)
+      if (m_ecnState != ECN_DISABLED && !isRetransmission)
         {
           SocketIpv6TclassTag ipTclassTag;
           ipTclassTag.SetTclass (0x02);
@@ -3239,7 +3240,7 @@ TcpSocketBase::PersistTimeout ()
     }
   AddOptions (tcpHeader);
   //Send a packet tag for setting ECT bits in IP header
-  if (m_ecnState != NO_ECN)
+  if (m_ecnState != ECN_DISABLED)
     {
       SocketIpTosTag ipTosTag;
       ipTosTag.SetTos (0x02);
@@ -3346,7 +3347,7 @@ TcpSocketBase::DoRetransmit ()
             {
               SendEmptyPacket (TcpHeader::SYN);
             }
-          m_ecnState = NO_ECN;
+          m_ecnState = ECN_DISABLED;
         }
       else
         {
@@ -3823,6 +3824,12 @@ TcpSocketBase::SafeSubtraction (uint32_t a, uint32_t b)
     }
 
   return 0;
+}
+
+void
+TcpSocketBase::SetEcn()
+{
+  m_ecn = true;
 }
 
 //RttHistory methods

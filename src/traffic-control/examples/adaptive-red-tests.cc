@@ -263,6 +263,7 @@ main (int argc, char *argv[])
     {
       Config::SetDefault ("ns3::RedQueueDisc::QueueLimit", UintegerValue (25));
       Config::SetDefault ("ns3::TcpSocketBase::UseEcn", BooleanValue (true));
+      Config::SetDefault ("ns3::RedQueueDisc::UseEcn", BooleanValue (true));
     } 
   else if (aredTest == 4) // test 4: red1AdaptECN
     {
@@ -270,6 +271,7 @@ main (int argc, char *argv[])
       Config::SetDefault ("ns3::RedQueueDisc::LInterm", DoubleValue (10));
       Config::SetDefault ("ns3::RedQueueDisc::QueueLimit", UintegerValue (25));
       Config::SetDefault ("ns3::TcpSocketBase::UseEcn", BooleanValue (true));
+      Config::SetDefault ("ns3::RedQueueDisc::UseEcn", BooleanValue (true));
     }
   else if (aredTest == 7) // test 7: fastlinkAutowq
     {

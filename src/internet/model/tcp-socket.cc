@@ -43,7 +43,7 @@ TcpSocket::TcpStateName[TcpSocket::LAST_STATE] = { "CLOSED", "LISTEN", "SYN_SENT
 
 
 const char* const
-TcpSocket::EcnStateName[TcpSocket::ECN_CWR_SENT+1] = { "NO_ECN", "ECN_IDLE", "ECN_CE_RCVD",
+TcpSocket::EcnStateName[TcpSocket::ECN_CWR_SENT+1] = { "ECN_DISABLED", "ECN_IDLE", "ECN_CE_RCVD",
                                         "ECN_ECE_SENT", "ECN_ECE_RCVD", "ECN_CWR_SENT" };
 
 TypeId

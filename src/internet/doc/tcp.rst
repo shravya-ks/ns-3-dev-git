@@ -685,7 +685,7 @@ The following ECN states are declared in ``src/internet/model/tcp-socket.h``
 
   typedef enum
     {
-      NO_ECN = 0,       //!< ECN disabled traffic 
+      ECN_DISABLED = 0,       //!< ECN disabled traffic 
       ECN_IDLE,         //!< ECN is enabled but currently there is no action pertaining to ECE or CWR to be taken 
       ECN_CE_RCVD,      //!< This state indicates that the receiver has received a packet with CE bit set in IP header 
       ECN_ECE_SENT,     //!< This state indicates that the receiver has sent an ACK with ECE bit set in TCP header
@@ -726,7 +726,7 @@ ECN capability is negotiated during the three-way TCP handshake:
       {
         SendEmptyPacket (TcpHeader::SYN);
       }
-    m_ecnState = NO_ECN;
+    m_ecnState = ECN_DISABLED;
 
 2. Receiver sends SYN + ACK + ECE
 
@@ -740,7 +740,7 @@ ECN capability is negotiated during the three-way TCP handshake:
     else
       {
         SendEmptyPacket (TcpHeader::SYN | TcpHeader::ACK);
-        m_ecnState = NO_ECN;
+        m_ecnState = ECN_DISABLED;
       }
 
 3. Sender sends ACK
@@ -753,7 +753,7 @@ ECN capability is negotiated during the three-way TCP handshake:
       }
     else
       {
-        m_ecnState = NO_ECN;
+        m_ecnState = ECN_DISABLED;
       }
 
 Once the ECN-negotiation is successful, the sender sends data packets with ECT
@@ -766,7 +766,7 @@ this guideline.
 ECN State Transitions
 ^^^^^^^^^^^^^^^^^^^^^
 
-1. Initially both sender and receiver have their m_ecnState set as NO_ECN
+1. Initially both sender and receiver have their m_ecnState set as ECN_DISABLED
 2. Once the ECN negotiation is successful, their states are set to ECN_IDLE 
 3. Upon receipt of a packet with CE bits set in IP header, the
    receiver changes its state to ECN_CE_RCVD

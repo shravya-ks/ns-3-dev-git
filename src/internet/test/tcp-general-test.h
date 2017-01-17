@@ -523,12 +523,15 @@ protected:
    */
   void SetInitialCwnd (SocketWho who, uint32_t initialCwnd);
 
+  void SetECN (SocketWho who);
+
   /**
    * \brief Forcefully set the initial ssth
    *
    * \param who socket to force
    * \param initialSsThresh size of the initial ssth
    */
+
   void SetInitialSsThresh (SocketWho who, uint32_t initialSsThresh);
 
   /**
