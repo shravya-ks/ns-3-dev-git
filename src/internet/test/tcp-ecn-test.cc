@@ -1,6 +1,6 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2017  <>
+ * Copyright (c) 2016 NITK Surathkal
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,6 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ * Authors: Shravya Ks <shravya.ks0@gmail.com>
+ *
  */
 
 #include "tcp-general-test.h"
@@ -26,16 +28,6 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("TcpECNTestSuite");
 
-/**
- * \brief Check the value of ECN against a home-made guess
- *
- * The guess is made wrt to segments that travel the network; we have,
- * in theory, the possibility to know the real amount of bytes in flight. However
- * this value is useless, since the sender bases its guess on the received ACK.
- *
- * \see Tx
- * \see ECNTrace
- */
 class TcpECNTest : public TcpGeneralTest
 {
 public:
@@ -45,7 +37,6 @@ protected:
   virtual void Rx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
   virtual void Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who);
   void ConfigureProperties ();
-
 
 private:
   uint32_t m_senderSent;
@@ -63,10 +54,9 @@ TcpECNTest::TcpECNTest (uint32_t testcase, const std::string &desc)
     m_receiverReceived (0),
     m_testcase (testcase)
 {
-  
 }
 
-void 
+void
 TcpECNTest::ConfigureProperties ()
 {
   TcpGeneralTest::ConfigureProperties ();
@@ -96,7 +86,7 @@ TcpECNTest::Rx (const Ptr<const Packet> p, const TcpHeader &h, SocketWho who)
             {
               NS_TEST_ASSERT_MSG_EQ (((h.GetFlags ()) & TcpHeader::ECE) && ((h.GetFlags ()) & TcpHeader::CWR), 0, "The flags ECE + CWR should not be set in the TCP header of first message receieved at receiver when sender is not ECN Capable");
             }
-          m_receiverReceived ++;
+          m_receiverReceived++;
         }
       else if (m_receiverReceived == 1)
         {
@@ -135,7 +125,7 @@ TcpECNTest::Tx (const Ptr<const Packet> p, const TcpHeader &h, SocketWho who)
           if (m_testcase == 4)
             {
               NS_TEST_ASSERT_MSG_EQ ((ipTosTag.GetTos ()), 0x02, "IP TOS should have ECT set if ECN negotiation between endpoints is successful");
-            } 
+            }
           else
             {
               NS_TEST_ASSERT_MSG_NE ((ipTosTag.GetTos ()), 0x02, "IP TOS should not have ECT set if ECN negotiation between endpoints is unsuccessful");
@@ -143,7 +133,6 @@ TcpECNTest::Tx (const Ptr<const Packet> p, const TcpHeader &h, SocketWho who)
         }
     }
 }
-
 
 //-----------------------------------------------------------------------------
 

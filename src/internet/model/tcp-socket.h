@@ -88,26 +88,10 @@ public:
     LAST_STATE    /**< Last state, used only in debug messages                */
   } TcpStates_t;
 
-  typedef enum {
-    ECN_DISABLED = 0,       /**< ECN disabled traffic                                                                          */ 
-    ECN_IDLE,         /**< ECN is enabled  but currently there is no action pertaining to ECE or CWR to be taken         */ 
-    ECN_CE_RCVD,      /**< This state indicates that the receiver has received a packet with CE bit set in IP header     */
-    ECN_ECE_SENT,     /**< This state indicates that the receiver has sent an ACK with ECE bit set in TCP header         */
-    ECN_ECE_RCVD,     /**< This state indicates that the sender has received an ACK with ECE bit set in TCP header       */
-    ECN_CWR_SENT      /**< This state indicates that the sender has reduced the congestion window, and sent a packet     
-                        * with CWR bit set in TCP header                                                                 */
-  } EcnStates_t;
-
   /**
    * \brief Literal names of TCP states for use in log messages
    */
   static const char* const TcpStateName[TcpSocket::LAST_STATE];
-  
-  /**
-   * \brief Literal names of ECN states for use in log messages
-   */
-  static const char* const EcnStateName[TcpSocket::ECN_CWR_SENT+1];
-  
 
 private:
   // Indirect the attribute setting and getting through private virtual methods
@@ -277,16 +261,6 @@ private:
  */
 typedef void (* TcpStatesTracedValueCallback)(const TcpSocket::TcpStates_t oldValue,
                                               const TcpSocket::TcpStates_t newValue);
-
-/**
- * \ingroup tcp
- * TracedValue Callback signature for EcnStates_t
- *
- * \param [in] oldValue original value of the traced variable
- * \param [in] newValue new value of the traced variable
- */
-typedef void (* EcnStatesTracedValueCallback)(const TcpSocket::EcnStates_t oldValue,
-                                              const TcpSocket::EcnStates_t newValue);
 
 } // namespace ns3
 

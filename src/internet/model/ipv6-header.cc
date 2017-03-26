@@ -278,9 +278,9 @@ std::string Ipv6Header::EcnTypeToString (EcnType ecn) const
       case ECN_ECT0:
         return "ECT (0)";
       case ECN_CE:
-        return "CE";      
+        return "CE";
       default:
-        return "Unknown ECN";
+        return "Unknown ECN codepoint";
     };
 }
 

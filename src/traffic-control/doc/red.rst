@@ -37,20 +37,15 @@ configure the simulation by selecting feature (i) or feature (ii), or both.
 
 Explicit Congestion Notification (ECN)
 ======================================
-This RED model supports an ECN mode of operation to notify endpoints of 
-congestion that may be developing in a bottleneck queue, without resorting 
-to packet drops. As recommended in RFC 3168, ECN marking is used only when 
-an incoming packet has an ECT bit set in its IP header, and if the 
-average queue length is between the minimum and maximum threshold. Packets 
-are always dropped when the average queue length is above the maximum 
-threshold, or if the ECT codepoint is not set in the IP header.
-
-In order to test the functionality of ECN support in RED, a test suite 
-named ``ecn-red-queue-disc-test-suite.cc`` has been developed.  It depends on 
-the internet model and hence, is placed in ``src/test/ns3tc``. Furthermore, 
-a test suite named ``ecn-ipv6-red-queue-disc-test-suite.cc`` is also 
-provided in ``src/test/ns3tc`` to verify the working of ECN in RED 
-QueueDisc with IPv6. 
+This RED model supports an ECN mode of operation to notify endpoints of
+congestion that may be developing in a bottleneck queue, without resorting
+to packet drops. Such a mode is enabled by setting the UseEcn attribute to
+true (it is false by default) and only affects incoming packets with the
+ECT bit set in their header. When the average queue length is between the
+minimum and maximum thresholds, an incoming packet is marked instead of being
+dropped. When the average queue length is above the maximum threshold, an
+incoming packet is marked (instead of being dropped) only if the UseHardDrop
+attribute is set to false (it is true by default).
 
 The implementation of support for ECN marking is done in such a way as
 to not impose an internet module dependency on the traffic control module.
@@ -68,8 +63,8 @@ S.Floyd, K.Fall http://icir.org/floyd/papers/redsims.ps
 ARED queue implementation is based on the algorithm provided in:
 S. Floyd et al, http://www.icir.org/floyd/papers/adaptiveRed.pdf
 
-The addition of explicit congestion notification (ECN) to IP: 
-K. K. Ramakrishnan et al, https://tools.ietf.org/html/rfc3168 
+The addition of explicit congestion notification (ECN) to IP:
+K. K. Ramakrishnan et al, https://tools.ietf.org/html/rfc3168
 
 Attributes
 ==========
@@ -88,6 +83,8 @@ policies:
 * LInterm
 * LinkBandwidth
 * LinkDelay
+* UseEcn
+* UseHardDrop
 
 In addition to RED attributes, ARED queue requires following attributes:
 

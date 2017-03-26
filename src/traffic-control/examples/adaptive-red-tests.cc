@@ -240,7 +240,7 @@ main (int argc, char *argv[])
 
   // RED params
   NS_LOG_INFO ("Set RED params");
-  Config::SetDefault ("ns3::RedQueueDisc::Mode", StringValue ("QUEUE_MODE_PACKETS"));
+  Config::SetDefault ("ns3::RedQueueDisc::Mode", StringValue ("QUEUE_DISC_MODE_PACKETS"));
   Config::SetDefault ("ns3::RedQueueDisc::MeanPktSize", UintegerValue (meanPktSize));
   Config::SetDefault ("ns3::RedQueueDisc::Wait", BooleanValue (true));
   Config::SetDefault ("ns3::RedQueueDisc::Gentle", BooleanValue (true));
@@ -297,6 +297,7 @@ main (int argc, char *argv[])
       Config::SetDefault ("ns3::RedQueueDisc::ARED", BooleanValue (true));
       Config::SetDefault ("ns3::RedQueueDisc::LInterm", DoubleValue (10));
       Config::SetDefault ("ns3::TcpSocketBase::UseEcn", BooleanValue (true));
+      Config::SetDefault ("ns3::RedQueueDisc::UseEcn", BooleanValue (true));      
     }
   else if (aredTest == 12) // test 12: fastlinkAllAdapt1
     {
@@ -501,104 +502,26 @@ main (int argc, char *argv[])
 
   RedQueueDisc::Stats st = StaticCast<RedQueueDisc> (queueDiscs.Get (0))->GetStats ();
 
-  if (aredTest == 1 || aredTest == 2 || aredTest == 13)
+  if (st.unforcedDrop == 0 && st.unforcedMark == 0)
     {
-      if (st.unforcedDrop > st.forcedDrop)
-        {
-          std::cout << "Drops due to prob mark should be less than the drops due to hard mark" << std::endl;
-          exit (-1);
-        }
+      std::cout << "There should be some unforced drops or marks" << std::endl;
+      exit (1);
+    }
 
+  if (aredTest == 1 || aredTest == 2 || aredTest == 3 || aredTest == 4 || aredTest == 13)
+    {
       if (st.qLimDrop == 0)
         {
           std::cout << "There should be some drops due to queue full" << std::endl;
-          exit (-1);
-        }
-      
-      if (st.unforcedMark != 0)
-        {
-          std::cout << "There should be no unforced marks when ECN is disabled" << std::endl;
-          exit (-1);
+          exit (1);
         }
     }
-  else if (aredTest == 3 || aredTest == 4)
+  else
     {
-      if (st.unforcedMark > st.forcedDrop)
-        {
-          std::cout << "Marks due to prob mark should be less than the drops due to hard mark" << std::endl;
-          exit (-1);
-        }
-
-      if (st.qLimDrop == 0)
-        {
-          std::cout << "There should be some drops due to queue full" << std::endl;
-          exit (-1);
-        }
-
-      if (st.unforcedDrop != 0)
-        {
-          std::cout << "There should be no unforced drop when ECN is enabled" << std::endl;
-          exit (-1);
-        }
-    }
-  else if (aredTest == 6 || aredTest == 7 || aredTest == 8 || aredTest == 9 || aredTest == 10 || aredTest == 14 || aredTest ==15)
-    {
-      if (st.unforcedDrop > st.forcedDrop)
-        {
-          std::cout << "Drops due to prob mark should be less than the drops due to hard mark" << std::endl;
-          exit (-1);
-        }
-
       if (st.qLimDrop != 0)
         {
           std::cout << "There should be zero drops due to queue full" << std::endl;
-          exit (-1);
-        }
-      
-      if (st.unforcedMark != 0)
-        {
-          std::cout << "There should be no unforced marks when ECN is disabled" << std::endl;
-          exit (-1);
-        }
-    }
-  else if (aredTest == 11)
-    {
-      if (st.unforcedMark > st.forcedDrop)
-        {
-          std::cout << "Marks due to prob mark should be less than the drops due to hard mark" << std::endl;
-          exit (-1);
-        }
-
-      if (st.qLimDrop != 0)
-        {
-          std::cout << "There should be zero drops due to queue full" << std::endl;
-          exit (-1);
-        }
-     
-      if (st.unforcedDrop != 0)
-        {
-          std::cout << "There should be no unforced drop when ECN is enabled" << std::endl;
-          exit (-1);
-        }
-    }
-  else if (aredTest == 12)
-    {
-      if (st.unforcedDrop < st.forcedDrop)
-        {
-          std::cout << "Drops due to prob mark should be more than the drops due to hard mark" << std::endl;
-          exit (-1);
-        }
-
-      if (st.qLimDrop != 0)
-        {
-          std::cout << "There should be zero drops due to queue full" << std::endl;
-          exit (-1);
-        }
-
-      if (st.unforcedMark != 0)
-        {
-          std::cout << "There should be no unforced marks when ECN is disabled" << std::endl;
-          exit (-1);
+          exit (1);
         }
     }
 
